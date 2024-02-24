@@ -3,13 +3,14 @@ from random import sample
 
 # Models the field of mines
 class MineField:
-    def __init__(self,width,height,num_mines):
-        self.width=width
-        self.height=height
-        self.total_size = self.width*self.height
-        self.mines = sample(range(self.total_size), num_mines)
+    def __init__(self, width: int,height: int,num_mines: int):
+        self.width : int = width
+        self.height : int = height
+        self.total_size : int = self.width*self.height
+        self.mines : list[int] = sample(range(self.total_size), num_mines)
+        self.hidden_tiles : int = self.total_size
         #mines = [4, 10]
-        self.minearray = [[Mine(_minefieldmath(x,y,self.width,self.mines),x,y) \
+        self.minearray : list[list[Mine]] = [[Mine(_minefieldmath(x,y,self.width,self.mines),x,y) \
                       for x in range(self.width)] for y in range(self.height)]
         for minelist in self.minearray:
             for mine in minelist:
@@ -17,35 +18,30 @@ class MineField:
 
     # When you guess (x,y) we should make that spot visible and end game if mine
     # Return true if mine, false if not
-    def guessspot(self,x,y):
+    def guessspot(self, x : int, y : int) -> bool:
         mine = self.minearray[y][x]
         mine.makeVisible()
+        self.hidden_tiles -= 1
         if mine.checkneighbors() == 0:
             self._revealneighbors(mine.x,mine.y)
         return mine.checkmine()
+    
+    def getminefield(self) -> list[list[str]]:
+        display_list = [[mine.display_partial() for mine in row] for row in self.minearray]
 
-    def displayminefield(self):
+    def displayminefield(self) -> None:
         for y in range(self.height):
             for x in range(self.width):
-                if self.minearray[y][x].isVisible:
-                    if self.minearray[y][x].checkmine(): # Note the y,x ordering. 
-                        print('X', end='')
-                    else:
-                        print(self.minearray[y][x].checkneighbors(),end='')
-                else:
-                    print('-',end='')
+                print(self.minearray[y][x].display_partial(), end='')
             print('')
 
-    def displaywholeminefield(self):
+    def displaywholeminefield(self) -> None:
         for y in range(self.height):
             for x in range(self.width):
-                if self.minearray[y][x].checkmine(): # Note the y,x ordering. 
-                    print('X', end='')
-                else:
-                    print(self.minearray[y][x].checkneighbors(),end='')
+                print(self.minearray[y][x].display_all(), end='')
             print('')
 
-    def _getneighbors(self,x,y):
+    def _getneighbors(self, x : int, y : int) -> list[Mine]:
         neighbors=[]
         xvals=[x]
         yvals=[y]
@@ -62,7 +58,7 @@ class MineField:
                 neighbors.append(self.minearray[y][x])
         return neighbors
 
-    def _computeneighbors(self, x, y):
+    def _computeneighbors(self, x : int, y : int) -> int:
         if self.minearray[y][x].checkmine():
             return -1
         
@@ -74,14 +70,15 @@ class MineField:
         return num_neighbors_are_mines
     
     # If you get a zero then you should reveal neighbors
-    def _revealneighbors(self,x,y):
+    def _revealneighbors(self, x : int, y : int) -> None:
         neighbors = self._getneighbors(x,y)
         for neighbor in neighbors:
             if not neighbor.isVisible:
                 neighbor.makeVisible()
+                self.hidden_tiles -= 1
                 if neighbor.checkneighbors() == 0:
                     self._revealneighbors(neighbor.x,neighbor.y)
 
     
-def _minefieldmath(x, y, width,mines):
+def _minefieldmath(x : int, y : int, width : int, mines : list[int]) -> bool:
     return x + width * y in mines
