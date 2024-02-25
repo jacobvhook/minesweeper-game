@@ -27,19 +27,10 @@ class MineField:
         return mine.checkmine()
     
     def getminefield(self) -> list[list[str]]:
-        display_list = [[mine.display_partial() for mine in row] for row in self.minearray]
-
-    def displayminefield(self) -> None:
-        for y in range(self.height):
-            for x in range(self.width):
-                print(self.minearray[y][x].display_partial(), end='')
-            print('')
-
-    def displaywholeminefield(self) -> None:
-        for y in range(self.height):
-            for x in range(self.width):
-                print(self.minearray[y][x].display_all(), end='')
-            print('')
+        return [[mine.display_partial() for mine in row] for row in self.minearray]
+    
+    def getwholeminefield(self) -> list[list[str]]:
+        return [[mine.display_all() for mine in row] for row in self.minearray]
 
     def _getneighbors(self, x : int, y : int) -> list[Mine]:
         neighbors=[]
