@@ -2,8 +2,8 @@ from minesweeper_interface import Interface
 
 class TextInterface(Interface):
     def pick_coordinates(self) -> tuple[int]:
-        xguess = int(input("Pick x coordinate "))
-        yguess = int(input("Pick y coordinate "))
+        xguess = int(input("Pick x coordinate (-1 to toggle flagging): "))
+        yguess = int(input("Pick y coordinate (-1 to toggle flagging): "))
         
         return (xguess, yguess)
     
@@ -28,6 +28,12 @@ class TextInterface(Interface):
                 print(entry, end='')
             yval += 1
             print('')
+    
+    def display_flag_mode(self, flagging: bool) -> None:
+        if flagging:
+            print('Flagging mode on')
+        else:
+            print('Flagging mode off')
     
     def display_win(self) -> None:
         print('You won!')

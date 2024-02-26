@@ -26,6 +26,11 @@ class MineField:
             self._revealneighbors(mine.x,mine.y)
         return mine.checkmine()
     
+    def flagspot(self, x : int, y : int) -> bool:
+        mine = self.minearray[y][x]
+        mine.toggle_flag()
+        return mine.isFlagged
+    
     def getminefield(self) -> list[list[str]]:
         return [[mine.display_partial() for mine in row] for row in self.minearray]
     

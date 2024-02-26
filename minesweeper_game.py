@@ -21,21 +21,29 @@ class MinesweeperGame:
         self.minefield : MineField = MineField(self.width, 
                                                self.height, 
                                                self.num_mines)
+        self.flagging : bool = False
+        
         self.display_minefield()
 
         while self.game_state == GameState.PLAYING:
             done_picking : bool = False
             while not done_picking:
                 xguess , yguess = self.interface.pick_coordinates()
-                if not (xguess < 0 or yguess < 0 or 
+                if xguess == -1 and yguess == -1:
+                    self.flagging = not self.flagging
+                    self.display_flagging()
+                elif not (xguess < 0 or yguess < 0 or 
                         xguess >= self.width or yguess >= self.height):
                     done_picking = True
 
-            found_a_mine : bool = self.minefield.guessspot(xguess, yguess)
-            if found_a_mine:
-                self.game_state = GameState.LOST
-            elif self.minefield.hidden_tiles == self.num_mines:
-                self.game_state = GameState.WON
+            if self.flagging:
+                self.minefield.flagspot(xguess, yguess)
+            else:
+                found_a_mine : bool = self.minefield.guessspot(xguess, yguess)
+                if found_a_mine:
+                    self.game_state = GameState.LOST
+                elif self.minefield.hidden_tiles == self.num_mines:
+                    self.game_state = GameState.WON
             
             self.display_minefield()
         
@@ -50,7 +58,11 @@ class MinesweeperGame:
         if whole:
             self.interface.display_board(self.minefield.getwholeminefield())
         else:
+            self.display_flagging()
             self.interface.display_board(self.minefield.getminefield())
+    
+    def display_flagging(self) -> None:
+        self.interface.display_flag_mode(self.flagging)
 
 
         

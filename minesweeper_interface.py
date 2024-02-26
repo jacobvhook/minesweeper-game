@@ -10,6 +10,10 @@ class Interface(ABC):
         pass
 
     @abstractmethod
+    def display_flag_mode(self, flagging: bool) -> None:
+        pass
+
+    @abstractmethod
     def display_win(self) -> None:
         pass
 

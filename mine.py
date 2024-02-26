@@ -4,6 +4,7 @@ class Mine:
         self.ismine : bool =ismine
         self.neighbors : int = 0
         self.isVisible : bool = False
+        self.isFlagged : bool = False
         self.x : int = x
         self.y : int = y
     
@@ -18,9 +19,15 @@ class Mine:
     
     def makeVisible(self) -> None:
         self.isVisible = True
+    
+    def toggle_flag(self) -> bool:
+        self.isFlagged = not self.isFlagged
+        return self.isFlagged
 
     def display_partial(self) -> str:
-        if not self.isVisible:
+        if self.isFlagged and not self.isVisible:
+            return 'F'
+        elif not self.isVisible:
             return '-'
         elif self.ismine:
             return 'X'
